@@ -37,7 +37,7 @@ Tabel_GSADF <- function(gsadf) {
     2
   ), nsmall = 2)
   min_start_day_id <- max_data$start_day
-  min_start_day_id <- dplyr::ifelse(min_start_day_id == 0, min_start_day_id + 1, min_start_day_id)
+  min_start_day_id <- ifelse(min_start_day_id == 0, min_start_day_id + 1, min_start_day_id)
   min_startday <- gsadf$stock$date[base::min(min_start_day_id)]
   max_endday <- gsadf$stock$date[base::max(max_data$end_day)]
   output <- base::list(

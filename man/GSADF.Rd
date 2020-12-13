@@ -15,7 +15,8 @@ GSADF(
   date_to = base::Sys.Date(),
   drift = F,
   trend = F,
-  risk_free_rate = 0.01
+  risk_free_rate = 0.01,
+  save_models = F
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ GSADF(
 \item{trend}{TRUE if trend, FALSE if no trend}
 
 \item{risk_free_rate}{Numeric value giving the yearly inflation}
+
+\item{save_models}{If True, then a summary of all LM calls is saved}
 }
 \value{
 list with with "stock" containing the price of the asset and "result" containing

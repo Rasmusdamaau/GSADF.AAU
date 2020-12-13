@@ -22,17 +22,26 @@ devtools::install_github("Rasmusdamaau/GSADF.AAU")
 
 ``` r
 library(GSADF.AAU)
-gsadf <- GSADF(ticker = "btc-usd",
-                          x = NULL,
-                          min_window = 60,
-                          step_length = 5,
-                          window_increase = 10,
-                          date_from = "2020-01-01",
-                          date_to = "2020-12-01",
-                          drift = F,
-                          trend = F,
-                          risk_free_rate = 0.01,
-                          own_df_distribution = NULL)
+
+# datasets from package
+data("df_distri")
+data("df_distri_drift")
+data("df_distri_drift_trend")
+
+gsadf <- GSADF(
+  ticker = "btc-usd",
+  x = NULL,
+  df_distribution = df_distri,
+  min_window = 60,
+  step_length = 5,
+  window_increase = 10,
+  date_from = "2020-01-01",
+  date_to = "2020-12-01",
+  drift = F,
+  trend = F,
+  risk_free_rate = 0.01,
+  save_models = F
+)
 #> Registered S3 method overwritten by 'quantmod':
 #>   method            from
 #>   as.zoo.data.frame zoo
@@ -70,18 +79,23 @@ head(gsadf)
 #>  9 -0.00817    0.00777  -1.05         40     100              60 0.264
 #> 10 -0.0102     0.00802  -1.28         45     105              60 0.189
 #> # ... with 802 more rows
+#> 
+#> $model_list
+#> list()
 ```
 
 ``` r
 
-plot_GSADF(u = gsadf,
-                      d = NULL,
-                      d_t = NULL,
-                      p_restrict = 0.95,
-                      start_date_tq_get = "2020-01-01",
-                      image_name = NULL,
-                      valuta = "USD",
-                      aktie = "Bitcoin")
+plot_GSADF(
+  u = gsadf,
+  d = NULL,
+  d_t = NULL,
+  p_restrict = 0.95,
+  start_date_tq_get = "2020-01-01",
+  image_name = NULL,
+  valuta = "USD",
+  aktie = "Bitcoin"
+)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
@@ -98,14 +112,14 @@ tabel_gsadf
 #> [1] 0.9996
 #> 
 #> $interval_longest
-#> [1] "2020-09-12" "2020-11-21"
+#> [1] "2020-09-11" "2020-11-20"
 #> 
 #> $price_change_longest
 #> [1] "78.69 %"
 #> 
-#> $mean_startday
-#> [1] "2020-09-17"
+#> $min_startday
+#> [1] "2020-09-11"
 #> 
-#> $mean_endday
-#> [1] "2020-11-21"
+#> $max_endday
+#> [1] "2020-11-20"
 ```

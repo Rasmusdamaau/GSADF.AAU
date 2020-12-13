@@ -13,13 +13,16 @@
 #' @param drift TRUE if drift, FALSE if no drift
 #' @param trend TRUE if trend, FALSE if no trend
 #' @param risk_free_rate Numeric value giving the yearly inflation
+#' @param save_models If True, then a summary of all LM calls is saved
 #' @return list with with "stock" containing the price of the asset and "result" containing
 #' the result of the GSADF, meaning a a tibble containing interval lengths, estimates,
 #'  p values and more
 #' @export
 
 GSADF <- function(ticker, x = NULL, df_distribution, min_window = 30, step_length = 5,
-                  window_increase = 10, date_from = "1900-01-01", date_to = base::Sys.Date(), drift = F, trend = F, risk_free_rate = 0.01) {
+                  window_increase = 10, date_from = "1900-01-01",
+                  date_to = base::Sys.Date(), drift = F, trend = F, risk_free_rate = 0.01,
+                  save_models = F) {
 
 
   if (base::is.null(x)) {
@@ -59,6 +62,7 @@ GSADF <- function(ticker, x = NULL, df_distribution, min_window = 30, step_lengt
   #   distribution_tibble <- own_df_distribution
   # }
   result <- tibble::tibble()
+  model_list <- list()
   k_ind <- 1
   while (window_size < (nrow_x - step_length)) {
     max_i <- base::floor((nrow_x - window_size) / step_length)
@@ -72,15 +76,24 @@ GSADF <- function(ticker, x = NULL, df_distribution, min_window = 30, step_lengt
       if (drift == F & trend == F) {
         model <- stats::lm(base::diff(x_window) ~ 0 +
           stats::na.omit(dplyr::lag(x_window)), data = plot_data)
+        if (save_models == T) {
+          model_list[[k_ind]] <- summary(model)
+        }
       }
       if (drift == T & trend == F) {
         model <- stats::lm(base::diff(x_window) ~ stats::na.omit(dplyr::lag(x_window)),
           data = plot_data
         )
+        if (save_models == T) {
+          model_list[[k_ind]] <- summary(model)
+        }
       }
       if (drift == T & trend == T) {
         model <- stats::lm(base::diff(x_window) ~ t[-1] +
           stats::na.omit(dplyr::lag(x_window)), data = plot_data)
+        if (save_models == T) {
+          model_list[[k_ind]] <- summary(model)
+        }
       }
       coef_model <- stats::coefficients(base::summary(model))
       result[k_ind, "estimate"] <- coef_model[
@@ -112,6 +125,7 @@ GSADF <- function(ticker, x = NULL, df_distribution, min_window = 30, step_lengt
   result_list <- base::list(stock = tibble::tibble(
     date = date_x,
     price = x
-  ), result = result)
+  ), result = result,
+  model_list = model_list)
   base::return(result_list)
 }
