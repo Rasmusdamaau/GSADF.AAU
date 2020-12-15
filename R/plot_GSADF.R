@@ -15,7 +15,7 @@
 plot_GSADF <- function(u = NULL, d = NULL, d_t = NULL, p_restrict = 0.95, start_date_tq_get = "2020-01-01",
                        image_name = NULL, valuta = "valuta", aktie = "aktie") {
   model_nr <- dplyr::case_when(base::is.null(d_t) & base::is.null(d) ~
-                                 1, base::is.null(d_t) ~ 2, !base::is.null(d_t) ~ 3)
+  1, base::is.null(d_t) ~ 2, !base::is.null(d_t) ~ 3)
 
   gsadf_result <- if (model_nr == 1) {
     u
@@ -31,10 +31,12 @@ plot_GSADF <- function(u = NULL, d = NULL, d_t = NULL, p_restrict = 0.95, start_
   )
   plot_data_rect <- tibble::tibble(gsadf_result$result) %>%
     dplyr::filter(p_val ==
-                    base::max(p_val)) %>%
+      base::max(p_val)) %>%
     dplyr::filter(interval_length == max(interval_length)) %>%
-    dplyr::mutate(date_start = stock_data$date[start_day],
-                  date_end = stock_data$date[end_day])
+    dplyr::mutate(
+      date_start = stock_data$date[max(start_day, 1)],
+      date_end = stock_data$date[end_day]
+    )
   stock <- ggplot2::ggplot(data = gsadf_result$stock, ggplot2::aes(
     x = date,
     y = price
